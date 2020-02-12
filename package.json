@@ -8,9 +8,14 @@
     "express": "^4.17.1",
     "mongoose": "^5.8.11"
   },
+  "engines": {
+    "node": "12.16.0"
+  },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
   },
   "repository": {
     "type": "git",
