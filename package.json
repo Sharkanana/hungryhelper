@@ -4,9 +4,14 @@
   "description": "MERN application for planning trips for FOOD",
   "main": "server.js",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "mongoose": "^5.8.11"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.8.11",
+    "morgan": "^1.9.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0"
   },
   "engines": {
     "node": "12.16.0"
