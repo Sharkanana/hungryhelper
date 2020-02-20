@@ -1,8 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Router from "next/router";
+import Login from "./login";
 
 const headerStyle = {
   display: 'flex',
@@ -31,6 +32,25 @@ const TABS = {
 };
 
 function Header({ currentTab }) {
+
+  const [showLogin, updateShowLogin] = useState(false);
+  const [showRegister, updateShowRegister] = useState(false);
+
+  function openLogin() {
+    updateShowLogin(true);
+  }
+
+  function closeLogin() {
+    updateShowLogin(false);
+  }
+  function openRegister() {
+    updateShowRegister(true);
+  }
+
+  function closeRegister() {
+    updateShowRegister(false);
+  }
+
   return (
     <div style={headerStyle}>
 
@@ -45,11 +65,13 @@ function Header({ currentTab }) {
       <div style={rightItems}>
 
         <AppBar position="static">
-          <Tabs>
-            <Tab label="Login"/>
-            <Tab label="Register"/>
+          <Tabs value={false}>
+            <Tab label="Login" onClick={openLogin}/>
+            <Tab label="Register" onClick={openRegister}/>
           </Tabs>
         </AppBar>
+
+        <Login open={showLogin} closeLogin={closeLogin}/>
 
       </div>
     </div>
