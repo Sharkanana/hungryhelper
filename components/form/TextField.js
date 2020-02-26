@@ -11,7 +11,7 @@ const TextField = props => {
         {...field}
         {...props}
       />
-      <ErrorMessage name={props.name} component="div" />
+      <ErrorMessage name={props.name} component="span" />
     </>
   );
 };

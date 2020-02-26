@@ -1,9 +1,11 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Router from "next/router";
 import Login from "./login";
+import Register from "./Register";
+import userContext from "../contexts/user";
 
 const headerStyle = {
   display: 'flex',
@@ -36,6 +38,8 @@ function Header({ currentTab }) {
   const [showLogin, updateShowLogin] = useState(false);
   const [showRegister, updateShowRegister] = useState(false);
 
+  let {user, updateUser} = useContext(userContext);
+
   function openLogin() {
     updateShowLogin(true);
   }
@@ -49,6 +53,16 @@ function Header({ currentTab }) {
 
   function closeRegister() {
     updateShowRegister(false);
+  }
+
+  function logout() {
+    localStorage.removeItem('jwtToken');
+
+    user.loggedIn = false;
+    updateUser(user);
+
+    //todo: why does the above update not update this view? but changing it on login does.
+    window.location.reload();
   }
 
   return (
@@ -66,12 +80,14 @@ function Header({ currentTab }) {
 
         <AppBar position="static">
           <Tabs value={false}>
-            <Tab label="Login" onClick={openLogin}/>
-            <Tab label="Register" onClick={openRegister}/>
+            {!user.loggedIn && <Tab label="Login" onClick={openLogin}/>}
+            {!user.loggedIn && <Tab label="Register" onClick={openRegister}/>}
+            {user.loggedIn && <Tab label="Logout" onClick={logout}/>}
           </Tabs>
         </AppBar>
 
         <Login open={showLogin} closeLogin={closeLogin}/>
+        <Register open={showRegister} closeRegister={closeRegister}/>
 
       </div>
     </div>

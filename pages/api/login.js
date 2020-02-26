@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const users = require('../../models/users');
 const passport = require('passport');
 const settings = require('../../config/settings');
 const jwt = require('jsonwebtoken');
@@ -8,10 +8,10 @@ export default async function(req, res) {
 
   await new Promise(resolve => {
 
-    const User = mongoose.model('user');
+    const body = req.body;
 
-    User.findOne({
-      username: req.username
+    users.findOne({
+      username: body.username
     }, function (err, user) {
       if (err) throw err;
 
@@ -19,13 +19,13 @@ export default async function(req, res) {
         res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
       } else {
         // check if password matches
-        user.comparePassword(req.password, function (err, isMatch) {
+        user.comparePassword(body.password, function (err, isMatch) {
           if (isMatch && !err) {
             // if user is found and password is right create a token
             let token = jwt.sign(user.toJSON(), settings.secret);
 
             // return the information including token as JSON
-            res.json({success: true, token: 'JWT ' + token});
+            res.json({success: true, token: 'JWT ' + token, user: user});
           } else {
             res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
           }

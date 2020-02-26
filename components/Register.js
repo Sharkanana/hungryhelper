@@ -1,50 +1,116 @@
 
-import React from "react";
+import React, {useState} from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
-import TextField from "@material-ui/core/TextField";
+import TextField from "./form/TextField";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
+import {Form, Formik} from "formik";
+import * as Yup from "yup";
+import Typography from "@material-ui/core/Typography";
+import axios from 'axios';
 
-export default function Login({open, closeLogin}) {
+export default function Register({open, closeRegister}) {
 
-  function handleLogin() {
-    console.log();
+  const [errorMsg, updateErrorMsg] = useState('');
+
+  function clearAndCloseRegister() {
+    updateErrorMsg('');
+    closeRegister();
   }
 
   return (
-    <Dialog open={open} onClose={closeLogin} aria-labelledby="form-dialog-title">
+    <Dialog open={open} onClose={clearAndCloseRegister} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">Register</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Please enter your username and password to login.
-        </DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="username"
-          label="Username"
-          type="text"
-          fullWidth
-        />
-        <TextField
-          margin="dense"
-          id="password"
-          label="Password"
-          type="password"
-          fullWidth
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={closeLogin} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleLogin} color="primary">
-          Login
-        </Button>
-      </DialogActions>
+
+      <Formik
+        initialValues={{
+          username: '',
+          email: '',
+          password: '',
+          confirm: ''
+        }}
+        validationSchema={Yup.object().shape({
+          username: Yup.string().required(),
+          email: Yup.string().required(),
+          password: Yup.string().required(),
+          confirm: Yup.string()
+            .oneOf([Yup.ref('password'), null], 'Passwords do not match.')
+            .required()
+        })}
+        onSubmit={(values, { setSubmitting }) => {
+
+          axios.post('/api/register', values)
+            .then(res => {
+
+              if(res.data.success) {
+                clearAndCloseRegister();
+              }
+              else {
+                updateErrorMsg(res.data.msg);
+              }
+
+            })
+            .catch(error => updateErrorMsg(error.response.data.msg))
+            .then(() => setSubmitting(false))
+        }}
+      >
+        {({submitForm, isSubmitting}) => (
+          <Form>
+            <DialogContent>
+              <DialogContentText>
+                Complete all fields to register
+              </DialogContentText>
+              <TextField
+                autoFocus
+                required
+                margin="dense"
+                name="username"
+                label="Username"
+                type="text"
+                fullWidth
+              />
+              <TextField
+                required
+                margin="dense"
+                name="email"
+                label="Email"
+                type="text"
+                fullWidth
+              />
+              <TextField
+                required
+                margin="dense"
+                name="password"
+                label="Password"
+                type="password"
+                fullWidth
+              />
+              <TextField
+                required
+                margin="dense"
+                name="confirm"
+                label="Confirm Password"
+                type="password"
+                fullWidth
+              />
+              <Typography>
+                {errorMsg}
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={clearAndCloseRegister} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={submitForm} disabled={isSubmitting} color="primary">
+                Register
+              </Button>
+            </DialogActions>
+          </Form>
+        )}
+      </Formik>
     </Dialog>
-  )
+  );
 }
