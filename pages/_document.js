@@ -48,18 +48,7 @@ function ensureCspNoncePresent(nonce, req) {
 }
 
 function createNonceAwareEmotionStyleTags(styles, nonce) {
-  if (!Array.isArray(styles)) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('[CSP] Unexpected Emotion styles shape; expected an array of styles.');
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.warn('[CSP] Unexpected Emotion styles shape; expected an array of styles.');
-    }
-
-    return [];
-  }
+  if (!Array.isArray(styles)) throw new Error('[CSP] Unexpected Emotion styles shape; expected an array of styles.');
 
   return styles
     .filter(style => style && typeof style.css === 'string')
@@ -81,11 +70,6 @@ function createNonceAwareEmotionStyleTags(styles, nonce) {
 export default class MyDocument extends Document {
   render() {
     const { nonce } = this.props;
-
-    if (process.env.NODE_ENV !== 'production' && process.env.CSP_NONCE_REQUIRED === 'true' && !nonce) {
-      // eslint-disable-next-line no-console
-      console.warn('[CSP] MyDocument.render expected a nonce prop but none was provided.');
-    }
 
     return (
       <Html lang="en">

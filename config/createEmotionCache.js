@@ -1,5 +1,10 @@
 import createCache from '@emotion/cache';
 
+/**
+* Creates an Emotion cache.
+* @param {Object} [options]
+* @param {string} [options.nonce] - CSP nonce applied to style tags inserted by Emotion.
+*/
 export default function createEmotionCache(options = {}) {
   const { nonce } = options;
 
