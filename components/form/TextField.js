@@ -1,13 +1,13 @@
 import { ErrorMessage, useField } from 'formik';
 // eslint-disable-next-line import/no-named-default
-import { TextField as MuiTextField } from '@material-ui/core';
+import TextField from '@mui/material/TextField';
 import React from 'react';
 
-const TextField = props => {
+const FormikTextField = props => {
   const [field, meta] = useField(props);
   return (
     <>
-      <MuiTextField
+      <TextField
         {...field}
         {...props}
       />
@@ -16,4 +16,4 @@ const TextField = props => {
   );
 };
 
-export default TextField;
+export default FormikTextField;

@@ -1,34 +1,65 @@
-import React from 'react';
-import App from 'next/app';
 import Head from 'next/head';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { CacheProvider } from '@emotion/react';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import React from 'react';
+import { CSP_NONCE_META_NAME } from '../config/csp';
+import createEmotionCache from '../config/createEmotionCache';
 import theme from '../config/theme';
 
-export default class MyApp extends App {
-  componentDidMount() {
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector('#jss-server-side');
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
-    }
+function getCspNonceFromMeta() {
+  if (typeof document === 'undefined') return undefined;
+  return document.querySelector(`meta[name="${CSP_NONCE_META_NAME}"]`)?.getAttribute('content') ?? undefined;
+}
+
+let clientSideEmotionCache;
+let clientSideNonce;
+
+function getOrCreateClientSideEmotionCache() {
+  if (typeof window === 'undefined') return createEmotionCache();
+
+  const nonce = getCspNonceFromMeta();
+  const nonceRequired = process.env.CSP_NONCE_REQUIRED === 'true';
+
+  if (!nonce && nonceRequired && process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.warn('[CSP] CSP_NONCE_REQUIRED=true but no CSP nonce meta tag was found on the client.');
   }
 
-  render() {
-    const { Component, pageProps } = this.props;
+  if (!clientSideEmotionCache) {
+    clientSideNonce = nonce;
+    clientSideEmotionCache = createEmotionCache({ nonce });
+  } else if (
+    process.env.NODE_ENV !== 'production' &&
+    ((clientSideNonce && nonce && clientSideNonce !== nonce) || (!clientSideNonce && nonce))
+  ) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      clientSideNonce
+        ? '[CSP] Emotion cache nonce changed after initialization; this is not supported.'
+        : '[CSP] CSP nonce appeared after the Emotion cache was created without one; styles may not satisfy CSP.',
+    );
+  }
 
-    return (
+  return clientSideEmotionCache;
+}
+
+export default function MyApp(props) {
+  const { Component, emotionCache: providedEmotionCache, pageProps } = props;
+  const emotionCache = providedEmotionCache || getOrCreateClientSideEmotionCache();
+
+  return (
+    <CacheProvider value={emotionCache}>
       <React.Fragment>
         <Head>
           <title>Hungry Helper</title>
           <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         </Head>
         <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <Component {...pageProps} />
         </ThemeProvider>
       </React.Fragment>
-    );
-  }
+    </CacheProvider>
+  );
 }

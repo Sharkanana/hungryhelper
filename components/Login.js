@@ -1,15 +1,15 @@
 
 import React, {useState, useEffect, useContext} from "react";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import TextField from "./form/TextField";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 import {Form, Formik} from "formik";
 import * as Yup from "yup";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import axios from 'axios';
 import userContext from "../contexts/user";
 
