@@ -1,7 +1,7 @@
 import React, {useContext, useState} from "react";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
+import AppBar from "@mui/material/AppBar";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import Router from "next/router";
 import Login from "./Login";
 import Register from "./Register";
